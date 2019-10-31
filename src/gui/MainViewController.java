@@ -15,6 +15,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.services.DepartmentService;
 
 public class MainViewController implements Initializable{
 	// Classe utilizada para controlar os botoes do Menu <<<<<<<<<<<<
@@ -36,7 +37,7 @@ public class MainViewController implements Initializable{
 	
 	@FXML
 	public void OnMenuItemDepartmentAction() {
-		loadView("/gui/DepartmentList.fxml"); // carrega a tela com lista de departamentos
+		loadView2("/gui/DepartmentList.fxml"); // carrega a tela com lista de departamentos
 	}
 	
 	@FXML
@@ -71,6 +72,34 @@ public class MainViewController implements Initializable{
 		}
 		catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Error Loading view", e.getMessage(), AlertType.ERROR);
+		}
+	}
+	
+	// funçao para abrir outra janela
+	// com synchronized garante que o codigo todo seja executado, evitando que seja parado na thread
+	private synchronized void loadView2(String absoluteName) {
+			
+			try {
+				FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+				VBox newVBox = loader.load(); // carrega a tela de About
+				
+				// mostra view dentro da janela principal
+				Scene mainScene = Main.getMainScene();  // pega uma referencia da scene
+				VBox mainVBox = (VBox) ((ScrollPane) mainScene.getRoot()).getContent(); // pega uma referencia para o VBox da cena principal
+				
+				Node mainMenu = mainVBox.getChildren().get(0); // pega uma referencia ao menu da cena principal
+				mainVBox.getChildren().clear(); // limpa o VBox da cena principal
+				
+				mainVBox.getChildren().add(mainMenu); // adiciona o menu novamente
+				mainVBox.getChildren().addAll(newVBox.getChildren()); // adiciona a janela About 
+				
+				DepartmentListController controller = loader.getController(); // pegando referencia do controller da View
+				controller.setDepartmentService(new DepartmentService()); // injeta dependencia no controller do SceneBuilder
+				controller.updateTableView(); // força atualização com as informações dos departamentos na tableView
+				
+			}
+			catch (IOException e) {
+				Alerts.showAlert("IO Exception", "Error Loading view", e.getMessage(), AlertType.ERROR);
 		}
 	}
 
