@@ -1,22 +1,20 @@
 package model.services;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import model.dao.DaoFactory;
+import model.dao.DepartmentDao;
 import model.entities.Department;
 
 public class DepartmentService {
+	
+	private DepartmentDao dao = DaoFactory.createDepartmentDao(); // acessa no BD os departamentos
 
 	// retorna uma lista de todos departamentos
 	public List<Department> findAll(){
 		
-		List<Department> list = new ArrayList<Department>();
-		// dados mockados - inserção provisoria como teste
-		list.add(new Department(1, "Books"));
-		list.add(new Department(2, "Computers"));
-		list.add(new Department(3, "Electronics"));
+		return dao.findAll(); // vai no BD e busca todos os departamentos
 		
-		return list;
 	}
 	
 }
