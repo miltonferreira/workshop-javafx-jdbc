@@ -9,10 +9,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import model.entities.Department;
 
 public class DepartmentFormController implements Initializable{
 	// controla janela do DepartmentForm.fxml <<<<<<<<<<<<< 
 
+	private Department entity;
+	
 	@FXML
 	private TextField txtId;
 	
@@ -27,6 +30,11 @@ public class DepartmentFormController implements Initializable{
 	
 	@FXML
 	private Button btCancel;
+	
+	// Recebe um Department para fazer alteraçoes nas suas info's
+	public void setDepartment(Department entity) {
+		this.entity = entity;
+	}
 	
 	// Métodos para tratar eventos dos TextField's, Label e Button's ----------------
 	
@@ -50,6 +58,17 @@ public class DepartmentFormController implements Initializable{
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(txtId); // aceita somente inteiros
 		Constraints.setTextFieldMaxLength(txtName, 30); // aceita somente 30 caracteres no texto
+	}
+	
+	// insere as infos na janela do DepartmentForm.fxml
+	public void updateFormData() {
+		
+		if(entity == null) {
+			throw new IllegalStateException("Entity was null");
+		}
+		
+		txtId.setText(String.valueOf(entity.getId())); // mostra o ID
+		txtName.setText(entity.getName()); // mostra o nome
 	}
 
 }

@@ -48,7 +48,8 @@ public class DepartmentListController implements Initializable{
 	@FXML
 	public void onBtNewAction(ActionEvent event) { 
 		Stage parentStage = Utils.currentStage(event); // com event é capaz de acessar o stage onde está o botao
-		CreateDialogForm("/gui/DepartmentForm.fxml", parentStage);
+		Department obj = new Department(10, "Maria"); // cria um novo obj ao clicar no botao NEW
+		CreateDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
 	}
 	
 	//
@@ -87,12 +88,17 @@ public class DepartmentListController implements Initializable{
 	}
 	
 	// cria a janela de dialogo
-	private void CreateDialogForm(String absoluteName, Stage parentStage) {
+	private void CreateDialogForm(Department obj, String absoluteName, Stage parentStage) {
 		
 		try {
 			
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load(); // carrega um painel do arquivo DepartmentForm.fxml
+			
+			// pega uma referencia ao DepartmentFormController
+			DepartmentFormController controller = loader.getController();
+			controller.setDepartment(obj); // indica o obj para editar as infos
+			controller.updateFormData(); // carrega as infos do obj no formulario
 			
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Enter Department data");
