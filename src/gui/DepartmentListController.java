@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import application.Main;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
 import javafx.collections.FXCollections;
@@ -26,8 +27,9 @@ import javafx.stage.Stage;
 import model.entities.Department;
 import model.services.DepartmentService;
 
-public class DepartmentListController implements Initializable{
+public class DepartmentListController implements Initializable, DataChangeListener{
 	// controla os componentes do DepartmentList.fxml <<<<<<<<<<<<
+	// classe observer(recebe lista de eventos para atualizar)
 	
 	private DepartmentService service; // DepartmentService para salvar infos no BD
 	
@@ -97,8 +99,10 @@ public class DepartmentListController implements Initializable{
 			
 			// pega uma referencia ao DepartmentFormController
 			DepartmentFormController controller = loader.getController();
+			
 			controller.setDepartment(obj); // indica o obj para editar as infos
 			controller.setDepartmentService(new DepartmentService()); // cria um novo DepartmentService para salvar infos no BD
+			controller.subscribeDataChangeListener(this); // recebe mudança dos eventos da classe DepartmentFormController
 			controller.updateFormData(); // carrega as infos do obj no formulario
 			
 			Stage dialogStage = new Stage();
@@ -113,6 +117,14 @@ public class DepartmentListController implements Initializable{
 		catch (IOException e) {
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
+		
+	}
+	
+	// faz atualizaçao dos eventos
+	@Override
+	public void onDataChanged() {
+		
+		updateTableView(); 
 		
 	}
 

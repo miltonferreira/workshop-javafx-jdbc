@@ -1,9 +1,12 @@
 package gui;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import db.DbException;
+import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
@@ -18,11 +21,15 @@ import model.entities.Department;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable{
-	// controla janela do DepartmentForm.fxml <<<<<<<<<<<<< 
+	// controla janela do DepartmentForm.fxml <<<<<<<<<<<<<
+	// classe subject(emite o evento)
 
 	private Department entity; // entidades do departamento
 	
 	private DepartmentService service; // fonte com BD
+	
+	// permite que objs se inscreverem e receber o evento
+	private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
 	
 	@FXML
 	private TextField txtId;
@@ -49,8 +56,12 @@ public class DepartmentFormController implements Initializable{
 		this.service = service;
 	}
 	
-	// Métodos para tratar eventos dos TextField's, Label e Button's ----------------
+	// add na lista dataChangeListeners
+	public void subscribeDataChangeListener(DataChangeListener listener) {
+		dataChangeListeners.add(listener);
+	}
 	
+	// Métodos para tratar eventos dos TextField's, Label e Button's ----------------
 	@FXML
 	public void onBtSaveAction(ActionEvent event) {
 		
@@ -66,6 +77,8 @@ public class DepartmentFormController implements Initializable{
 			entity = getFormData();
 			service.saveOrUpdate(entity); // salva infos do obj no BD
 			
+			notifyDataChangeListeners(); // manda as mudanças para lista de eventos
+			
 			Utils.currentStage(event).close(); // fecha janela atual
 		}
 		catch (DbException e) {
@@ -74,6 +87,14 @@ public class DepartmentFormController implements Initializable{
 		
 	}
 	
+	// manda as mudanças para lista de eventos
+	private void notifyDataChangeListeners() {
+		for(DataChangeListener listener : dataChangeListeners) {
+			listener.onDataChanged();
+		}
+		
+	}
+
 	// pega dados nas caixas do formulario e cria departamento
 	private Department getFormData() {
 		
@@ -92,7 +113,6 @@ public class DepartmentFormController implements Initializable{
 	}
 	
 	// Métodos para tratar eventos dos TextField's, Label e Button's ----------------
-	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
