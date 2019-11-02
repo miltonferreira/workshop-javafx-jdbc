@@ -29,7 +29,7 @@ import model.services.DepartmentService;
 public class DepartmentListController implements Initializable{
 	// controla os componentes do DepartmentList.fxml <<<<<<<<<<<<
 	
-	private DepartmentService service; //
+	private DepartmentService service; // DepartmentService para salvar infos no BD
 	
 	@FXML
 	private TableView<Department> tableViewDepartment;
@@ -48,7 +48,7 @@ public class DepartmentListController implements Initializable{
 	@FXML
 	public void onBtNewAction(ActionEvent event) { 
 		Stage parentStage = Utils.currentStage(event); // com event é capaz de acessar o stage onde está o botao
-		Department obj = new Department(10, "Maria"); // cria um novo obj ao clicar no botao NEW
+		Department obj = new Department(); // cria um novo obj ao clicar no botao NEW
 		CreateDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
 	}
 	
@@ -98,6 +98,7 @@ public class DepartmentListController implements Initializable{
 			// pega uma referencia ao DepartmentFormController
 			DepartmentFormController controller = loader.getController();
 			controller.setDepartment(obj); // indica o obj para editar as infos
+			controller.setDepartmentService(new DepartmentService()); // cria um novo DepartmentService para salvar infos no BD
 			controller.updateFormData(); // carrega as infos do obj no formulario
 			
 			Stage dialogStage = new Stage();
