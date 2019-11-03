@@ -3,7 +3,9 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import db.DbException;
 import gui.listeners.DataChangeListener;
@@ -18,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Department;
+import model.exceptions.ValidationException;
 import model.services.DepartmentService;
 
 public class DepartmentFormController implements Initializable{
@@ -81,6 +84,9 @@ public class DepartmentFormController implements Initializable{
 			
 			Utils.currentStage(event).close(); // fecha janela atual
 		}
+		catch (ValidationException e) {
+			setErrorMessage(e.getErrors());
+		}
 		catch (DbException e) {
 			Alerts.showAlert("Error saving object", null, e.getMessage(), AlertType.ERROR);
 		}
@@ -100,12 +106,28 @@ public class DepartmentFormController implements Initializable{
 		
 		// cria um novo obj das caixas do formulario
 		Department obj = new Department();
+		
+		ValidationException exception = new ValidationException("Validation error");
+		
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
+		
+		// trim() elimita espaço em branco no começo e final
+		if(txtName.getText() == null || txtName.getText().trim().equals("")) {
+			exception.addError("name", "Field can`t be empty");
+		}
+		
 		obj.setName(txtName.getText());
+		
+		// checa na coleçao de errors se existe algum dentro
+		if(exception.getErrors().size() > 0) {
+			throw exception; // lança excecao se tiver algum dentro do MAP
+		}
 		
 		return obj;
 		
 	}
+	
+	// Botao que cancela e fecha a janela
 
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
@@ -136,4 +158,15 @@ public class DepartmentFormController implements Initializable{
 		txtName.setText(entity.getName()); // mostra o nome
 	}
 
+	// controla labelErrorName do formulario
+	private void setErrorMessage(Map<String, String> errors) {
+		
+		Set<String> fields = errors.keySet();
+		
+		if(fields.contains("name")) {
+			labelErrorName.setText(errors.get("name")); // mostra mensagem no label
+		}
+		
+	}
+	
 }
