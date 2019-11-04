@@ -17,9 +17,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import model.services.DepartmentService;
+import model.services.SellerService;
 
 public class MainViewController implements Initializable{
-	// Classe utilizada para controlar os botoes do Menu <<<<<<<<<<<<
+	// Classe utilizada para controlar os botoes do Menu
 	
 	@FXML
 	private MenuItem menuItemSeller; // controla o botao do vendedor
@@ -30,25 +31,31 @@ public class MainViewController implements Initializable{
 	@FXML
 	private MenuItem menuItemAbout; // controla o botao do about
 	
-	// event handler
+	// carrega a tela com lista de vendedores com função de inicialização do updateTableView
 	@FXML
 	public void OnMenuItemSellerAction() {
-		System.out.println("OnMenuItemSellerAction");
+		loadView("/gui/SellerList.fxml", (SellerListController controller) -> {
+			controller.setSellerService(new SellerService());
+			controller.updateTableView();
+		});
 	}
 	
+	// carrega a tela com lista de departamentos com função de inicialização do updateTableView
 	@FXML
 	public void OnMenuItemDepartmentAction() {
 		loadView("/gui/DepartmentList.fxml", (DepartmentListController controller) -> {
 			controller.setDepartmentService(new DepartmentService());
 			controller.updateTableView();
-		}); // carrega a tela com lista de departamentos com função de inicialização do updateTableView
+		});
 	}
 	
+	// carrega a tela de About com função de inicialização vazia
 	@FXML
 	public void OnMenuItemAboutAction() {
-		loadView("/gui/About.fxml", x ->{}); // carrega a tela de About com função de inicialização vazia
+		loadView("/gui/About.fxml", x ->{}); 
 	}
 	
+	// metodo vazio <<<<<<<<<<<<<<<<<
 	@Override
 	public void initialize(URL uri, ResourceBundle rb) {
 		

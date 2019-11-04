@@ -7,7 +7,7 @@ import model.dao.DepartmentDao;
 import model.entities.Department;
 
 public class DepartmentService {
-	// faz ponte com classes que acessam o BD
+	// faz ponte com classes que acessam o BD para departamento
 	
 	private DepartmentDao dao = DaoFactory.createDepartmentDao(); // acessa no BD os departamentos
 
