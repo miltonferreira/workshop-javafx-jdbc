@@ -9,15 +9,17 @@ import application.Main;
 import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Utils;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -43,6 +45,9 @@ public class DepartmentListController implements Initializable, DataChangeListen
 	private TableColumn<Department, String> tableColumnName; // pega coluna de nomes
 	
 	@FXML
+	private TableColumn<Department, Department> tableColumnEDIT; // pega coluna de botões de edição das linhas
+	
+	@FXML
 	private Button btNew; // pega o botao de novo departamento
 	
 	private ObservableList<Department> obsList; // carrega os departamentos nessa observableList
@@ -51,7 +56,7 @@ public class DepartmentListController implements Initializable, DataChangeListen
 	public void onBtNewAction(ActionEvent event) { 
 		Stage parentStage = Utils.currentStage(event); // com event é capaz de acessar o stage onde está o botao
 		Department obj = new Department(); // cria um novo obj ao clicar no botao NEW
-		CreateDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
+		createDialogForm(obj, "/gui/DepartmentForm.fxml", parentStage);
 	}
 	
 	//
@@ -86,11 +91,12 @@ public class DepartmentListController implements Initializable, DataChangeListen
 		List<Department> list = service.findAll(); // pega lista de departamentos
 		obsList = FXCollections.observableArrayList(list); // pega a lista
 		tableViewDepartment.setItems(obsList); // recebe a lista de departamentos
+		initEditButtons(); // botao de edição para cada linha
 		
 	}
 	
 	// cria a janela de dialogo
-	private void CreateDialogForm(Department obj, String absoluteName, Stage parentStage) {
+	private void createDialogForm(Department obj, String absoluteName, Stage parentStage) {
 		
 		try {
 			
@@ -127,5 +133,32 @@ public class DepartmentListController implements Initializable, DataChangeListen
 		updateTableView(); 
 		
 	}
-
+	
+	// acrescenta um novo botão com o texto edit, em cada linha da tabela, abrindo um formulario
+	private void initEditButtons() {
+		
+		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
+		
+		tableColumnEDIT.setCellFactory(param -> new TableCell<Department, Department>() {
+		private final Button button = new Button("edit");
+		
+			@Override
+			protected void updateItem(Department obj, boolean empty) {
+				
+				super.updateItem(obj, empty);
+				
+				if (obj == null) {
+					setGraphic(null);
+					return;
+				}
+				
+				setGraphic(button);
+				
+				button.setOnAction(
+					event -> createDialogForm(
+					obj, "/gui/DepartmentForm.fxml",Utils.currentStage(event)));
+			}
+		});
+		}
+	
 }
