@@ -7,7 +7,7 @@ import model.dao.DepartmentDao;
 import model.entities.Department;
 
 public class DepartmentService {
-	// faz ponte com classes que acessam o BD <<<<<<<<<<<<<<
+	// faz ponte com classes que acessam o BD
 	
 	private DepartmentDao dao = DaoFactory.createDepartmentDao(); // acessa no BD os departamentos
 
@@ -16,6 +16,7 @@ public class DepartmentService {
 		return dao.findAll(); // vai no BD e busca todos os departamentos
 	}
 	
+	// salva ou atualiza departamento do BD
 	public void saveOrUpdate(Department obj) {
 		
 		// se nao tem ID é um novo obj
@@ -24,6 +25,11 @@ public class DepartmentService {
 		} else {
 			dao.update(obj); // se tem ID atualiza as infos
 		}
+	}
+	
+	// delete departamento do BD
+	public void remove(Department obj) {
+		dao.deleteById(obj.getId());
 	}
 	
 }
