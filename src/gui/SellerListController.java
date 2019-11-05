@@ -1,6 +1,7 @@
 package gui;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -46,7 +47,16 @@ public class SellerListController implements Initializable, DataChangeListener{
 	private TableColumn<Seller, Seller> tableColumnEDIT; // pega coluna de botões de edição das linhas
 	
 	@FXML
-	TableColumn<Seller, Seller> tableColumnREMOVE; // <<<<<<<<<<<<<<<<<<<<<<<
+	TableColumn<Seller, Seller> tableColumnREMOVE; // pega coluna para inserir botões de remover vendedor
+	
+	@FXML
+	TableColumn<Seller, Seller> tableColumnEmail; //
+	
+	@FXML
+	TableColumn<Seller, Date> tableColumnBirthDate; //
+	
+	@FXML
+	TableColumn<Seller, Double> tableColumnBaseSalary; //
 	
 	@FXML
 	private Button btNew; // pega o botao de novo departamento
@@ -73,12 +83,26 @@ public class SellerListController implements Initializable, DataChangeListener{
 	
 	// inicia o comportamento das colunas
 	private void initializeNodes() {
+
+		// informações do departamento
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("Name"));
 		
+		// informações do vendedor
+		tableColumnEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
+		
+		tableColumnBirthDate.setCellValueFactory(new PropertyValueFactory<>("birthDate"));
+		Utils.formatTableColumnDate(tableColumnBirthDate, "dd/MM/yyyy"); // formata data do aniversário do vendedor
+		
+		tableColumnBaseSalary.setCellValueFactory(new PropertyValueFactory<>("baseSalary"));
+		Utils.formatTableColumnDouble(tableColumnBaseSalary, 2);
+		
 		Stage stage = (Stage) Main.getMainScene().getWindow(); // acessa a cena do Main
+		
 		// tableView fica na mesma altura da janela(preenche para baixo até o limite inferior da janela)
 		tableViewSeller.prefHeightProperty().bind(stage.heightProperty());
+		
+		
 		
 	}
 	

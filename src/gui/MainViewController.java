@@ -20,7 +20,7 @@ import model.services.DepartmentService;
 import model.services.SellerService;
 
 public class MainViewController implements Initializable{
-	// Classe utilizada para controlar os botoes do Menu
+	// Classe utilizada para controlar os botoes, campos de texto e label de erro do Menu
 	
 	@FXML
 	private MenuItem menuItemSeller; // controla o botao do vendedor
