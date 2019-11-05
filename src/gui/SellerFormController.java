@@ -1,8 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -17,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.entities.Seller;
@@ -24,7 +28,7 @@ import model.exceptions.ValidationException;
 import model.services.SellerService;
 
 public class SellerFormController implements Initializable{
-	// controla janela do SellertForm.fxml <<<<<<<<<<<<<
+	// controla janela do SellertForm.fxml
 	// classe subject(emite o evento)
 
 	private Seller entity; // entidades do departamento
@@ -34,14 +38,36 @@ public class SellerFormController implements Initializable{
 	// permite que objs se inscreverem e receber o evento
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
 	
+	// campos de texto ---------------------------------------------------------------
 	@FXML
-	private TextField txtId;
+	private TextField txtId; // texto de ID do vendedor
 	
 	@FXML
-	private TextField txtName;
+	private TextField txtName; // texto de nome do vendedor
 	
 	@FXML
-	private Label labelErrorName;
+	private TextField txtEmail; // texto de email do vendedor
+	
+	@FXML
+	private DatePicker dpBirthDate; // texto de niver do vendedor
+	
+	@FXML
+	private TextField txtBaseSalary; // texto de salario do vendedor
+	// campos de texto ---------------------------------------------------------------
+	
+	// campos de errors --------------------------------------------------------------
+	@FXML
+	private Label labelErrorName; // texto de erro
+	
+	@FXML
+	private Label labelErrorEmail; // texto de erro
+	
+	@FXML
+	private Label labelErrorBirthDate; // texto de erro
+	
+	@FXML
+	private Label labelErrorBaseSalary; // texto de erro
+	// campos de errors --------------------------------------------------------------
 	
 	@FXML
 	private Button btSave;
@@ -143,8 +169,14 @@ public class SellerFormController implements Initializable{
 	
 	// restricoes dos TextField's, Label
 	private void initializeNodes() {
+		
 		Constraints.setTextFieldInteger(txtId); // aceita somente inteiros
-		Constraints.setTextFieldMaxLength(txtName, 30); // aceita somente 30 caracteres no texto
+		Constraints.setTextFieldMaxLength(txtName, 70); // aceita somente 70 caracteres no texto
+		Constraints.setTextFieldDouble(txtBaseSalary); // aceita somente double
+		Constraints.setTextFieldMaxLength(txtEmail, 60); // aceita somente 60 caracteres no email
+		
+		Utils.formatDatePicker(dpBirthDate, "dd/MM/yyyy"); // formata a data de niver do vendedor
+		
 	}
 	
 	// insere as infos na janela do SellerForm.fxml
@@ -156,6 +188,15 @@ public class SellerFormController implements Initializable{
 		
 		txtId.setText(String.valueOf(entity.getId())); // mostra o ID
 		txtName.setText(entity.getName()); // mostra o nome
+		txtEmail.setText(entity.getEmail()); // mostra o email
+		Locale.setDefault(Locale.US);
+		txtBaseSalary.setText(String.format("%.2f", entity.getBaseSalary())); // mostra o salario
+		
+		// caso exista uma data de niver, faz a conversão
+		if(entity.getBirthDate() != null) {
+			dpBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault())); //zone pega o fuso-horario do computador do usuario
+		}
+		
 	}
 
 	// controla labelErrorName do formulario
