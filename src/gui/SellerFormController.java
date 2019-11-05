@@ -15,16 +15,24 @@ import gui.listeners.DataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.util.Callback;
+import model.entities.Department;
 import model.entities.Seller;
 import model.exceptions.ValidationException;
+import model.services.DepartmentService;
 import model.services.SellerService;
 
 public class SellerFormController implements Initializable{
@@ -33,7 +41,9 @@ public class SellerFormController implements Initializable{
 
 	private Seller entity; // entidades do departamento
 	
-	private SellerService service; // fonte com BD
+	private SellerService service; // ponte com BD para acessar vendedores
+	
+	private DepartmentService departmentService; // ponte com BD para acessar departamentos
 	
 	// permite que objs se inscreverem e receber o evento
 	private List<DataChangeListener> dataChangeListeners = new ArrayList<DataChangeListener>();
@@ -55,6 +65,9 @@ public class SellerFormController implements Initializable{
 	private TextField txtBaseSalary; // texto de salario do vendedor
 	// campos de texto ---------------------------------------------------------------
 	
+	@FXML
+	private ComboBox<Department> comboBoxDepartment; // mostra lista de departamentos do vendedor
+	
 	// campos de errors --------------------------------------------------------------
 	@FXML
 	private Label labelErrorName; // texto de erro
@@ -69,11 +82,15 @@ public class SellerFormController implements Initializable{
 	private Label labelErrorBaseSalary; // texto de erro
 	// campos de errors --------------------------------------------------------------
 	
+	// botoes da View ----------------------------------------------------------------
 	@FXML
 	private Button btSave;
 	
 	@FXML
 	private Button btCancel;
+	// botoes da View ----------------------------------------------------------------
+	
+	private ObservableList<Department> obsList; // carrega lista dos departamentos no BD
 	
 	// Recebe um Seller para fazer alteraçoes nas suas info's
 	public void setSeller(Seller entity) {
@@ -81,8 +98,9 @@ public class SellerFormController implements Initializable{
 	}
 	
 	// faz alteraçoes de infos no banco de dados
-	public void setSellerService(SellerService service) {
+	public void setServices(SellerService service, DepartmentService departmentService) {
 		this.service = service;
+		this.departmentService = departmentService;
 	}
 	
 	// add na lista dataChangeListeners
@@ -154,7 +172,6 @@ public class SellerFormController implements Initializable{
 	}
 	
 	// Botao que cancela e fecha a janela
-
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		Utils.currentStage(event).close(); // fecha janela atual sem salvar
@@ -177,6 +194,8 @@ public class SellerFormController implements Initializable{
 		
 		Utils.formatDatePicker(dpBirthDate, "dd/MM/yyyy"); // formata a data de niver do vendedor
 		
+		initializeComboBoxDepartment(); // inicia o comboBox com os departamentos
+		
 	}
 	
 	// insere as infos na janela do SellerForm.fxml
@@ -197,8 +216,27 @@ public class SellerFormController implements Initializable{
 			dpBirthDate.setValue(LocalDate.ofInstant(entity.getBirthDate().toInstant(), ZoneId.systemDefault())); //zone pega o fuso-horario do computador do usuario
 		}
 		
+		if(entity.getDepartment() == null) {
+			//se for um novo vendedor coloca o primeiro departamento da lista
+			comboBoxDepartment.getSelectionModel().selectFirst();
+		}else {
+			// preenche o comboBox com o departamento do vendedor existente
+			comboBoxDepartment.setValue(entity.getDepartment());	
+		}
+		
 	}
 
+	// carrega comboBox com os departamentos
+	public void loadAssociatedObjects() {
+		
+		if(departmentService == null) {
+			throw new IllegalStateException("departmentService was null");
+		}
+		List<Department> list = departmentService.findAll(); // carrega todos departamentos
+		obsList = FXCollections.observableArrayList(list);
+		comboBoxDepartment.setItems(obsList); // adiciona departamentos no comboBox
+	}
+	
 	// controla labelErrorName do formulario
 	private void setErrorMessage(Map<String, String> errors) {
 		
@@ -208,6 +246,21 @@ public class SellerFormController implements Initializable{
 			labelErrorName.setText(errors.get("name")); // mostra mensagem no label
 		}
 		
+	}
+	
+	// inicia o comboBox com os departamentos
+	private void initializeComboBoxDepartment() {
+		
+		Callback<ListView<Department>, ListCell<Department>> factory = lv -> new ListCell<Department>() {
+			 @Override
+			 protected void updateItem(Department item, boolean empty) {
+				 super.updateItem(item, empty);
+				 setText(empty ? "" : item.getName());
+			 }
+		};
+		
+		comboBoxDepartment.setCellFactory(factory);
+		comboBoxDepartment.setButtonCell(factory.call(null));
 	}
 	
 }

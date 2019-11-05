@@ -31,6 +31,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Seller;
+import model.services.DepartmentService;
 import model.services.SellerService;
 
 public class SellerListController implements Initializable, DataChangeListener{
@@ -138,7 +139,8 @@ public class SellerListController implements Initializable, DataChangeListener{
 			SellerFormController controller = loader.getController();
 			
 			controller.setSeller(obj); // indica o obj para editar as infos
-			controller.setSellerService(new SellerService()); // cria um novo SellerService para salvar infos no BD
+			controller.setServices(new SellerService(), new DepartmentService()); // cria um novo SellerService e DepartmentService para salvar infos no BD
+			controller.loadAssociatedObjects(); // carrega comboBox com os departamentos
 			controller.subscribeDataChangeListener(this); // recebe mudança dos eventos da classe SellerFormController
 			controller.updateFormData(); // carrega as infos do obj no formulario
 			
@@ -152,6 +154,7 @@ public class SellerListController implements Initializable, DataChangeListener{
 			
 		}
 		catch (IOException e) {
+			e.printStackTrace();
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
 		
