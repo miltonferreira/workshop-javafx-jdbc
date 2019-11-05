@@ -33,6 +33,15 @@ public class Utils {
 		}
 	}
 
+	// converte texto para Double
+	public static Double tryParseToDouble(String str) {
+		try {
+			return Double.parseDouble(str);
+		} catch (NumberFormatException e) {
+			return null; // se nao for um Double valido retorna null
+		}
+	}
+
 	// formata data <<<<<<<<<
 	public static <T> void formatTableColumnDate(TableColumn<T, Date> tableColumn, String format) {
 		tableColumn.setCellFactory(column -> {
@@ -72,7 +81,7 @@ public class Utils {
 		});
 	}
 
-	// formatar o date picker <<<<<<<<<<<
+	// formata o date picker
 	public static void formatDatePicker(DatePicker datePicker, String format) {
 		datePicker.setConverter(new StringConverter<LocalDate>() {
 			DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(format);
