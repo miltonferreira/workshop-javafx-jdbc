@@ -1,5 +1,6 @@
 package gui;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -24,12 +27,14 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.entities.Seller;
 import model.services.SellerService;
 
 public class SellerListController implements Initializable, DataChangeListener{
-	// controla os componentes do SellerList.fxml <<<<<<<<<<<<
+	// controla os componentes do SellerList.fxml
 	// classe observer(recebe lista de eventos para atualizar)
 	
 	private SellerService service; // SellerService para salvar infos no BD
@@ -124,31 +129,31 @@ public class SellerListController implements Initializable, DataChangeListener{
 	// cria a janela de dialogo
 	private void createDialogForm(Seller obj, String absoluteName, Stage parentStage) {
 		
-//		try {
-//			
-//			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
-//			Pane pane = loader.load(); // carrega um painel do arquivo SellerForm.fxml
-//			
-//			// pega uma referencia ao SellerFormController
-//			SellerFormController controller = loader.getController();
-//			
-//			controller.setSeller(obj); // indica o obj para editar as infos
-//			controller.setSellerService(new SellerService()); // cria um novo SellerService para salvar infos no BD
-//			controller.subscribeDataChangeListener(this); // recebe mudança dos eventos da classe SellerFormController
-//			controller.updateFormData(); // carrega as infos do obj no formulario
-//			
-//			Stage dialogStage = new Stage();
-//			dialogStage.setTitle("Enter Seller data");
-//			dialogStage.setScene(new Scene(pane)); // nova cena
-//			dialogStage.setResizable(false); // nao deixa ser redimensionada
-//			dialogStage.initOwner(parentStage); // stage pai da cena
-//			dialogStage.initModality(Modality.WINDOW_MODAL); // ela fica trava e nao deixa acessar janela atrás
-//			dialogStage.showAndWait(); // ???
-//			
-//		}
-//		catch (IOException e) {
-//			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
-//		}
+		try {
+			
+			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
+			Pane pane = loader.load(); // carrega um painel do arquivo SellerForm.fxml
+			
+			// pega uma referencia ao SellerFormController
+			SellerFormController controller = loader.getController();
+			
+			controller.setSeller(obj); // indica o obj para editar as infos
+			controller.setSellerService(new SellerService()); // cria um novo SellerService para salvar infos no BD
+			controller.subscribeDataChangeListener(this); // recebe mudança dos eventos da classe SellerFormController
+			controller.updateFormData(); // carrega as infos do obj no formulario
+			
+			Stage dialogStage = new Stage();
+			dialogStage.setTitle("Enter Seller data");
+			dialogStage.setScene(new Scene(pane)); // nova cena
+			dialogStage.setResizable(false); // nao deixa ser redimensionada
+			dialogStage.initOwner(parentStage); // stage pai da cena
+			dialogStage.initModality(Modality.WINDOW_MODAL); // ela fica trava e nao deixa acessar janela atrás
+			dialogStage.showAndWait(); // ???
+			
+		}
+		catch (IOException e) {
+			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
+		}
 		
 	}
 	
